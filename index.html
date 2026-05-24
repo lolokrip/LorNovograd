@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Новоград RP — лор города</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #05070f;
+            font-family: 'Inter', sans-serif;
+            color: #e9e3d5;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* анимированный фон-сетка и туман */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(#2e2a4f20 1px, transparent 1px), linear-gradient(90deg, #2e2a4f20 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 30% 40%, rgba(80, 50, 140, 0.3), transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+            animation: slowDrift 25s infinite alternate;
+        }
+
+        @keyframes slowDrift {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+            100% { transform: translate(2%, 3%) scale(1.05); opacity: 0.7; }
+        }
+
+        /* основной контейнер */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        /* header с неоном */
+        header {
+            padding: 32px 0 24px;
+            border-bottom: 1px solid rgba(120, 80, 200, 0.4);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 7, 15, 0.8);
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #c7aaff, #9d6eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #cfc6f0;
+            font-weight: 500;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+        .nav-links a:hover {
+            color: #b48bff;
+            text-shadow: 0 0 6px #a36eff;
+        }
+
+        /* hero — эпиграф */
+        .hero {
+            padding: 100px 0 80px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #ffffff, #b59eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            color: #c8c0e0;
+            border-left: 3px solid #8a66d4;
+            padding-left: 20px;
+            text-align: left;
+        }
+
+        /* секции с анимацией появления */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1), transform 0.8s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem;
+            margin: 60px 0 40px;
+            border-left: 6px solid #a675ff;
+            padding-left: 22px;
+        }
+        .section-title span {
+            background: linear-gradient(135deg, #f0eaff, #b893ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* карточки фракций и персонажей */
+        .grid-2col, .grid-3col {
+            display: grid;
+            gap: 35px;
+            margin-bottom: 60px;
+        }
+        .grid-2col { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3col { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+        .lore-card {
+            background: rgba(15, 12, 28, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 28px;
+            border: 1px solid rgba(130, 90, 220, 0.4);
+            transition: 0.3s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .lore-card:hover {
+            border-color: #a77aff;
+            transform: translateY(-6px);
+            background: rgba(25, 18, 45, 0.85);
+            box-shadow: 0 20px 30px -8px #00000080;
+        }
+        .card-icon {
+            font-size: 2.6rem;
+            margin-bottom: 18px;
+            color: #be9eff;
+        }
+        .lore-card h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .lore-card p {
+            color: #dad2f0;
+            font-size: 0.95rem;
+        }
+
+        /* таймлайн */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0 50px;
+        }
+        .timeline-item {
+            background: #0f0c1ecc;
+            border-left: 5px solid #b27eff;
+            padding: 16px 26px;
+            border-radius: 28px;
+            backdrop-filter: blur(4px);
+        }
+        .timeline-year {
+            font-family: monospace;
+            font-weight: 700;
+            color: #d6bdff;
+            letter-spacing: 1px;
+        }
+
+        /* footer */
+        footer {
+            text-align: center;
+            padding: 45px 0 30px;
+            border-top: 1px solid #342c50;
+            margin-top: 50px;
+            color: #9185b8;
+        }
+
+        /* адаптивность */
+        @media (max-width: 780px) {
+            .hero h1 { font-size: 2.5rem; }
+            .section-title { font-size: 2rem; }
+            .nav-links { gap: 20px; }
+            .container { padding: 0 20px; }
+        }
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 2px #c09eff; }
+            100% { text-shadow: 0 0 8px #b87eff; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<header>
+    <div class="container">
+        <div class="nav">
+            <div class="logo">НОВОГРАД • RP</div>
+            <div class="nav-links">
+                <a href="#history">Лор</a>
+                <a href="#factions">Фракции</a>
+                <a href="#characters">Персонажи</a>
+                <a href="#timeline">Хронология</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero fade-up">
+            <h1>Город, где каждый выбирает свою тень</h1>
+            <p>Новоград — мегаполис, выросший на руинах империи. Здесь переплелись криминал, мистика и борьба за власть. Улицы помнят кровь, заводские трубы шепчут заговоры, а в подземельях обитает нечто древнее. Добро пожаловать в самую опасную ролевую игру.</p>
+        </div>
+
+        <!-- История города -->
+        <div id="history" class="fade-up">
+            <div class="section-title"><span>✦ История Новограда ✦</span></div>
+            <div class="lore-card" style="margin-bottom: 40px;">
+                <div class="card-icon"><i class="fas fa-landmark"></i></div>
+                <h3>От имперского форпоста до города грехов</h3>
+                <p>Основан в 1783 году как крепость Российской империи. После революции стал промышленным центром. В 1990-е здесь орудовали десятки ОПГ, а в 2010-м в шахтах под городом обнаружили аномальную зону, привлекающую «охотников за тайнами». Сегодня Новоград — это киберпанк-гетто с примесью мистицизма: государство пытается удержать контроль, но окраины живут по своим законам.</p>
+                <p style="margin-top: 12px;">Легенда гласит: под центральной площадью спит древний голем, и каждые 50 лет он требует жертву. В этом году — ровно 50 лет с последнего пробуждения...</p>
+            </div>
+        </div>
+
+        <!-- Фракции -->
+        <div id="factions" class="fade-up">
+            <div class="section-title"><span>✦ Влиятельные фракции ✦</span></div>
+            <div class="grid-3col">
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-gavel"></i></div>
+                    <h3>Мэрия Новограда</h3>
+                    <p>«Порядок через прогресс». Мэр Аркадий Корсаков мечтает превратить город в утопию, но коррупция и тайные союзы с мафией разъедают власть. Их тайная цель — контроль над аномальной зоной.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-skull"></i></div>
+                    <h3>«Чёрные псы»</h3>
+                    <p>Самая жестокая ОПГ, контролирующая наркотрафик и подпольные бои. Лидер — Глеб «Мясник» Топоров. Говорят, они заключили сделку с сущностью из подземелья.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Орден «Новый Рассвет»</h3>
+                    <p>Религиозные фанатики, стремящиеся очистить город от «скверны». Их штаб — старый собор. Сжигают ведьм и мутантов. Но кто настоящий монстр? Их методы жестоки.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-microchip"></i></div>
+                    <h3>Корпорация «Технос»</h3>
+                    <p>Кибернетические импланты, дроны, секретные лаборатории. Их научный центр скрывает аномалии, чтобы создавать сверхсолдат. Глава — загадочный «Собиратель».</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-ghost"></i></div>
+                    <h3>«Тени Подземья»</h3>
+                    <p>Союз сталкеров и некромантов, которые исследуют аномалии. Они знают правду о проклятии города. Их не видно, но слышно в катакомбах.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-theater-masks"></i></div>
+                    <h3>Театр «Маскарад»</h3>
+                    <p>Таинственный культ актёров, управляющий слухами и судьбами. Каждый спектакль меняет реальность. Их лидер — никогда не снимает маску.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ключевые персонажи -->
+        <div id="characters" class="fade-up">
+            <div class="section-title"><span>✦ Лица Новограда ✦</span></div>
+            <div class="grid-2col">
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-user-tie"></i></div>
+                    <h3>Аркадий Корсаков</h3>
+                    <p>Мэр Новограда. Холодный, расчётливый. Имеет доступ к секретным архивам КГБ. Его дочь пропала в аномальной зоне пять лет назад — он ищет способ воскресить её.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-user-ninja"></i></div>
+                    <h3>Глеб «Мясник» Топоров</h3>
+                    <p>Авторитет Чёрных псов. Бывший десантник, после ранения стал жесток. Контролирует подземные арены и чёрный рынок артефактов.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-user-astronaut"></i></div>
+                    <h3>Инга «Кукольница»</h3>
+                    <p>Лидер Теней Подземья. Умеет управлять аномальными сущностями. Её лицо скрыто всегда. Говорят, она — дочь первого сталкера.</p>
+                </div>
+                <div class="lore-card">
+                    <div class="card-icon"><i class="fas fa-mask"></i></div>
+                    <h3>Режиссёр</h3>
+                    <p>Глава театра «Маскарад». Его спектакли предсказывают будущее. Никто не видел его лица. Он знает о городе всё.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Хронология (таймлайн) -->
+        <div id="timeline" class="fade-up">
+            <div class="section-title"><span>✦ Хронология событий ✦</span></div>
+            <div class="timeline">
+                <div class="timeline-item"><span class="timeline-year">1783</span> — Основание крепости Новоград.</div>
+                <div class="timeline-item"><span class="timeline-year">1919</span> — Здесь расстрелян последний барон. Призрак бродит по администрации.</div>
+                <div class="timeline-item"><span class="timeline-year">1992</span> — Первая криминальная война, город фактически поделён между бандами.</div>
+                <div class="timeline-item"><span class="timeline-year">2010</span> — Обнаружена аномальная зона в шахтах. Появляются «охотники».</div>
+                <div class="timeline-item"><span class="timeline-year">2024</span> — Корпорация «Технос» начинает эксперименты над людьми. Раскол в Ордене.</div>
+                <div class="timeline-item"><span class="timeline-year">2026 — Сегодня</span> — Город на грани войны между фракциями. Пророчество о «Пробуждении Голема».</div>
+            </div>
+        </div>
+
+        <!-- Мистическая карта города (атмосферный блок) -->
+        <div class="fade-up" style="margin: 50px 0 40px; text-align: center;">
+            <div class="lore-card" style="display: inline-block; text-align: left; max-width: 600px;">
+                <i class="fas fa-map-marked-alt" style="font-size: 2rem; margin-bottom: 12px; display: inline-block;"></i>
+                <h3>Районы Новограда</h3>
+                <p>▪️ Центр — небоскрёбы и мэрия.<br>
+                ▪️ Заводской квартал — территория Чёрных псов.<br>
+                ▪️ Старый город — убежище Ордена и театра.<br>
+                ▪️ Подземье — лабиринты с аномалиями, вход через шахту №8.</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="container">
+        <p>© 2026 Новоград RP — лор-сайт проекта. Все персонажи и события вымышлены.</p>
+        <p style="margin-top: 10px;">🔮 Город ждёт своих героев. Присоединяйся к ролевой игре на официальном сервере.</p>
+        <p><i class="fas fa-dragon"></i> Сайт создан хранителями лора</p>
+    </div>
+</footer>
+
+<script>
+    // Анимация появления при скролле
+    const fadeElements = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+    fadeElements.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
